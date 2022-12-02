@@ -1,5 +1,5 @@
 #[aoc(day1, part1)]
-pub fn part1(input: &str) -> i32 {
+fn part1(input: &str) -> i32 {
     let mut max_calories = 0;
     let mut current_sum = 0;
 
@@ -15,7 +15,7 @@ pub fn part1(input: &str) -> i32 {
 }
 
 #[aoc(day1, part2)]
-pub fn part2(input: &str) -> i32 {
+fn part2(input: &str) -> i32 {
     let mut top_three = (0, 0, 0);
 
     let mut current_sum = 0;
