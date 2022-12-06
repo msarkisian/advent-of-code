@@ -11,7 +11,7 @@ fn part1(input: &[u8]) -> usize {
         }
         return index + 4;
     }
-    panic!("4 consecutive unique characters not found in input")
+    unreachable!("4 consecutive unique characters not found in input")
 }
 
 #[aoc(day6, part2)]
@@ -25,5 +25,5 @@ fn part2(input: &[u8]) -> usize {
         }
         return index + 14;
     }
-    panic!("14 consecutive unique characters not found in input")
+    unreachable!("14 consecutive unique characters not found in input")
 }
