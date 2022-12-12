@@ -1,24 +1,9 @@
-use std::collections::BinaryHeap;
+use std::collections::VecDeque;
 
 #[derive(PartialEq, Eq, Debug)]
 pub struct State {
     pub steps: usize,
     pub position: (usize, usize),
-}
-
-impl Ord for State {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other
-            .steps
-            .cmp(&self.steps)
-            .then_with(|| self.position.cmp(&other.position))
-    }
-}
-
-impl PartialOrd for State {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
 }
 
 #[aoc_generator(day12)]
@@ -50,8 +35,8 @@ fn part1(input: &Vec<Vec<u8>>) -> usize {
         }
     }
     let start_point = start_point.unwrap();
-    let mut heap = BinaryHeap::new();
-    heap.push(State {
+    let mut queue = VecDeque::new();
+    queue.push_back(State {
         position: start_point,
         steps: 0,
     });
@@ -60,11 +45,8 @@ fn part1(input: &Vec<Vec<u8>>) -> usize {
     let mut visited_points = vec![vec![false; input[0].len()]; input.len()];
     visited_points[start_point.0][start_point.1] = true;
 
-    println!("{:?}", input);
-
-    while let Some(state) = heap.pop() {
+    while let Some(state) = queue.pop_front() {
         let (current_y, current_x) = state.position;
-        println!("{:?}", state);
         // up
         if current_y > 0
             && input[current_y - 1][current_x] == END
@@ -76,7 +58,7 @@ fn part1(input: &Vec<Vec<u8>>) -> usize {
             && input[current_y - 1][current_x] <= input[current_y][current_x] + 1
             && !visited_points[current_y - 1][current_x]
         {
-            heap.push(State {
+            queue.push_back(State {
                 steps: state.steps + 1,
                 position: (current_y - 1, current_x),
             });
@@ -94,7 +76,7 @@ fn part1(input: &Vec<Vec<u8>>) -> usize {
             && input[current_y + 1][current_x] <= input[current_y][current_x] + 1
             && !visited_points[current_y + 1][current_x]
         {
-            heap.push(State {
+            queue.push_back(State {
                 steps: state.steps + 1,
                 position: (current_y + 1, current_x),
             });
@@ -112,7 +94,7 @@ fn part1(input: &Vec<Vec<u8>>) -> usize {
             && input[current_y][current_x - 1] <= input[current_y][current_x] + 1
             && !visited_points[current_y][current_x - 1]
         {
-            heap.push(State {
+            queue.push_back(State {
                 steps: state.steps + 1,
                 position: (current_y, current_x - 1),
             });
@@ -130,7 +112,7 @@ fn part1(input: &Vec<Vec<u8>>) -> usize {
             && input[current_y][current_x + 1] <= input[current_y][current_x] + 1
             && !visited_points[current_y][current_x + 1]
         {
-            heap.push(State {
+            queue.push_back(State {
                 steps: state.steps + 1,
                 position: (current_y, current_x + 1),
             });
@@ -155,26 +137,23 @@ fn part2(input: &Vec<Vec<u8>>) -> usize {
             }
         }
     }
-    let mut heap = start_points
+    let mut queue = start_points
         .into_iter()
         .map(|p| State {
             steps: 0,
             position: p,
         })
-        .collect::<BinaryHeap<State>>();
+        .collect::<VecDeque<State>>();
 
     let mut input = input.clone();
     let mut visited_points = vec![vec![false; input[0].len()]; input.len()];
-    for start_point in heap.iter() {
+    for start_point in queue.iter() {
         input[start_point.position.0][start_point.position.1] = b'a';
         visited_points[start_point.position.0][start_point.position.1] = true;
     }
 
-    println!("{:?}", input);
-
-    while let Some(state) = heap.pop() {
+    while let Some(state) = queue.pop_front() {
         let (current_y, current_x) = state.position;
-        println!("{:?}", state);
         // up
         if current_y > 0
             && input[current_y - 1][current_x] == END
@@ -186,7 +165,7 @@ fn part2(input: &Vec<Vec<u8>>) -> usize {
             && input[current_y - 1][current_x] <= input[current_y][current_x] + 1
             && !visited_points[current_y - 1][current_x]
         {
-            heap.push(State {
+            queue.push_back(State {
                 steps: state.steps + 1,
                 position: (current_y - 1, current_x),
             });
@@ -204,7 +183,7 @@ fn part2(input: &Vec<Vec<u8>>) -> usize {
             && input[current_y + 1][current_x] <= input[current_y][current_x] + 1
             && !visited_points[current_y + 1][current_x]
         {
-            heap.push(State {
+            queue.push_back(State {
                 steps: state.steps + 1,
                 position: (current_y + 1, current_x),
             });
@@ -222,7 +201,7 @@ fn part2(input: &Vec<Vec<u8>>) -> usize {
             && input[current_y][current_x - 1] <= input[current_y][current_x] + 1
             && !visited_points[current_y][current_x - 1]
         {
-            heap.push(State {
+            queue.push_back(State {
                 steps: state.steps + 1,
                 position: (current_y, current_x - 1),
             });
@@ -240,7 +219,7 @@ fn part2(input: &Vec<Vec<u8>>) -> usize {
             && input[current_y][current_x + 1] <= input[current_y][current_x] + 1
             && !visited_points[current_y][current_x + 1]
         {
-            heap.push(State {
+            queue.push_back(State {
                 steps: state.steps + 1,
                 position: (current_y, current_x + 1),
             });
