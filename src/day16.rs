@@ -1,6 +1,6 @@
 use std::{
     cell::{Cell, RefCell},
-    collections::{BinaryHeap, HashMap},
+    collections::{BinaryHeap, HashMap, HashSet, VecDeque},
     rc::Rc,
 };
 
@@ -39,6 +39,13 @@ impl PartialOrd for PopulateDistanceState {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
+}
+
+struct State {
+    current: Rc<Node>,
+    remaining_time: isize,
+    pressure: usize,
+    closed_valves: HashSet<String>,
 }
 
 const HEAD_NODE_NAME: &str = "AA";
@@ -133,16 +140,74 @@ fn input_generator(input: &str) -> HashMap<String, Rc<Node>> {
         populate_node_distances(&node, &nodes_with_nonzero_pressure);
         nodes_with_nonzero_pressure.insert(0, node);
     }
-    populate_node_distances(nodes.get("AA").unwrap(), &nodes_with_nonzero_pressure);
+    populate_node_distances(
+        nodes.get(HEAD_NODE_NAME).unwrap(),
+        &nodes_with_nonzero_pressure,
+    );
     nodes
 }
 
 #[aoc(day16, part1)]
 fn part1(input: &HashMap<String, Rc<Node>>) -> usize {
-    for node in input.values() {
-        println!("{:?}: {:?}", node.name, node.nonzero_node_distances);
+    // for v in input.values() {
+    //     println!(
+    //         "{}: ({}) {:?}",
+    //         v.name.borrow(),
+    //         v.pressure.get(),
+    //         v.nonzero_node_distances.borrow()
+    //     );
+    // }
+    let mut max_pressure = 0;
+    let mut queue = VecDeque::new();
+    let pressure_valves = input
+        .values()
+        .filter_map(|n| {
+            if n.pressure.get() > 0 {
+                Some(n.name.borrow().clone())
+            } else {
+                None
+            }
+        })
+        .collect::<HashSet<_>>();
+    queue.push_back(State {
+        current: input.get(HEAD_NODE_NAME).unwrap().clone(),
+        pressure: 0,
+        remaining_time: 30,
+        closed_valves: pressure_valves.clone(),
+    });
+
+    while let Some(state) = queue.pop_front() {
+        max_pressure = std::cmp::max(max_pressure, state.pressure);
+        if state.remaining_time < 0 || state.closed_valves.len() == 0 {
+            continue;
+        }
+        for dest in state.closed_valves.iter() {
+            let dist_to_dest = *state
+                .current
+                .nonzero_node_distances
+                .borrow()
+                .get(dest)
+                .unwrap() as isize;
+            if dist_to_dest >= state.remaining_time {
+                continue;
+            }
+
+            queue.push_back(State {
+                current: input.get(dest).unwrap().clone(),
+                remaining_time: state.remaining_time - dist_to_dest - 1,
+                pressure: (state.pressure
+                    + (state.remaining_time - dist_to_dest - 1) as usize
+                        * input.get(dest).unwrap().pressure.get()),
+                closed_valves: state
+                    .closed_valves
+                    .clone()
+                    .into_iter()
+                    .filter(|v| v != dest)
+                    .collect(),
+            })
+        }
     }
-    todo!()
+    max_pressure
 }
 
 #[cfg(test)]
