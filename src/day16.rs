@@ -4,7 +4,6 @@ use std::{
     collections::{BTreeSet, BinaryHeap, HashMap, HashSet, VecDeque},
     rc::Rc,
 };
-const THREADS: usize = 16;
 
 #[derive(Debug, PartialEq, Eq)]
 struct Node {
