@@ -1,14 +1,7 @@
 use std::collections::HashSet;
 
-#[derive(Hash, PartialEq, Eq)]
-struct Cube {
-    x: usize,
-    y: usize,
-    z: usize,
-}
-
 #[aoc_generator(day18)]
-fn input_generator(input: &str) -> HashSet<Cube> {
+fn input_generator(input: &str) -> HashSet<(isize, isize, isize)> {
     let mut cubes = HashSet::new();
     for line in input.lines() {
         let mut nums = line.split(',');
@@ -17,57 +10,33 @@ fn input_generator(input: &str) -> HashSet<Cube> {
         let y = nums.next().unwrap().parse().unwrap();
         let z = nums.next().unwrap().parse().unwrap();
 
-        cubes.insert(Cube { x, y, z });
+        cubes.insert((x, y, z));
     }
 
     cubes
 }
 
 #[aoc(day18, part1)]
-fn part1(input: &HashSet<Cube>) -> usize {
+fn part1(input: &HashSet<(isize, isize, isize)>) -> isize {
     let mut surface_area = 0;
-    for cube in input.iter() {
+    for (x, y, z) in input.iter() {
         let mut temp_area = 6;
-        if input.contains(&Cube {
-            x: cube.x - 1,
-            y: cube.y,
-            z: cube.z,
-        }) {
+        if input.contains(&(x - 1, *y, *z)) {
             temp_area -= 1;
         }
-        if input.contains(&Cube {
-            x: cube.x + 1,
-            y: cube.y,
-            z: cube.z,
-        }) {
+        if input.contains(&(x + 1, *y, *z)) {
             temp_area -= 1;
         }
-        if input.contains(&Cube {
-            x: cube.x,
-            y: cube.y - 1,
-            z: cube.z,
-        }) {
+        if input.contains(&(*x, y - 1, *z)) {
             temp_area -= 1;
         }
-        if input.contains(&Cube {
-            x: cube.x,
-            y: cube.y + 1,
-            z: cube.z,
-        }) {
+        if input.contains(&(*x, y + 1, *z)) {
             temp_area -= 1;
         }
-        if input.contains(&Cube {
-            x: cube.x,
-            y: cube.y,
-            z: cube.z - 1,
-        }) {
+        if input.contains(&(*x, *y, z - 1)) {
             temp_area -= 1;
         }
-        if input.contains(&Cube {
-            x: cube.x,
-            y: cube.y,
-            z: cube.z + 1,
-        }) {
+        if input.contains(&(*x, *y, z + 1)) {
             temp_area -= 1;
         }
         surface_area += temp_area;
