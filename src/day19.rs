@@ -210,6 +210,68 @@ fn part1(input: &Vec<Blueprint>) -> usize {
         .fold(0, |prev, (max_geodes, id)| prev + (max_geodes * id))
 }
 
+#[aoc(day19, part2)]
+fn part2(input: &Vec<Blueprint>) -> usize {
+    let blueprints = input.iter().take(3);
+    let mut blueprint_max_geodes = Vec::with_capacity(3);
+    for blueprint in blueprints {
+        let mut max_geodes = 0;
+        let mut queue = BinaryHeap::new();
+        let mut seen_state = HashSet::new();
+        let mut max_geode_robots_at_time = vec![0usize; 33];
+        queue.push(State {
+            inventory: Inventory::new(),
+            elapsed_time: 0,
+        });
+        // let mut search_depth: usize = 0;
+        while let Some(state) = queue.pop() {
+            // println!("{}", queue.len());
+            // println!("{:?}", max_geode_robots_at_time);
+            if seen_state.contains(&state)
+                || (state.elapsed_time > 0
+                    && state.inventory.robots.3 < max_geode_robots_at_time[state.elapsed_time - 1])
+            {
+                continue;
+            }
+            if state.elapsed_time == 32 {
+                // if search_depth % 100 == 0 {
+                //     println!("{}%", search_depth / 100);
+                // }
+                // if search_depth == 1000 {
+                //     break;
+                // }
+                max_geodes = std::cmp::max(max_geodes, state.inventory.geodes);
+                // search_depth += 1;
+                continue;
+            }
+            let buyable_robots = state.inventory.get_buyable_robots(blueprint);
+            for robot in buyable_robots {
+                let mut next_inventory = state.inventory.clone();
+                next_inventory.gather_resources();
+                next_inventory.buy_robot(blueprint, &robot);
+                queue.push(State {
+                    inventory: next_inventory,
+                    elapsed_time: state.elapsed_time + 1,
+                })
+            }
+            let mut next_inventory = state.inventory.clone();
+            next_inventory.gather_resources();
+            queue.push(State {
+                inventory: next_inventory,
+                elapsed_time: state.elapsed_time + 1,
+            });
+            max_geode_robots_at_time[state.elapsed_time] =
+                max_geode_robots_at_time[state.elapsed_time].max(state.inventory.robots.3);
+            seen_state.insert(state);
+        }
+        blueprint_max_geodes.push(max_geodes);
+    }
+    println!("{:?}", blueprint_max_geodes);
+    blueprint_max_geodes
+        .iter()
+        .fold(1, |product, max_geodes| product * max_geodes)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
