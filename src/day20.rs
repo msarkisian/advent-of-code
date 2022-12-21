@@ -110,9 +110,6 @@ fn part2(input: &str) -> isize {
                     cursor.move_next();
                 }
                 cursor.move_next();
-                if cursor.current() == None {
-                    cursor.move_next();
-                }
             }
         } else if steps_to_new < 0 {
             for _ in 0..steps_to_new.abs() {
