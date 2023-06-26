@@ -64,8 +64,43 @@ def part1(directions: list[str]):
 # directions = ["R5", "L5", "R5", "R3"]
 # print(part1(directions))  # 12
 
+def part2(directions: list[str]):
+    facing = Direction.NORTH
+    x, y = 0, 0
+    visited_locations = set()
+
+    for dir in directions:
+        match dir[0]:
+            case 'R':
+                facing = facing.right()
+            case 'L':
+                facing = facing.left()
+            case other:
+                raise Exception("invalid direction in input")
+        steps = int(dir[1:])
+        for _ in range(steps):
+            match facing:
+                case Direction.NORTH:
+                    y += 1
+                case Direction.SOUTH:
+                    y -= 1
+                case Direction.EAST:
+                    x += 1
+                case Direction.WEST:
+                    x -= 1
+            if str(x) + "," + str(y) in visited_locations:
+                return abs(x) + abs(y)
+            visited_locations.add(str(x) + ',' + str(y))
+    print(visited_locations)
+
+
+# TEST
+# directions = ["R8", "R4", "R4", "R8"]
+# print(part2(directions))  # 4
+
+
 if __name__ == "__main__":
     with open("./input/1.txt") as file:
         directions = file.read().split(", ")
-        print(directions)
         print(part1(directions))
+        print(part2(directions))
