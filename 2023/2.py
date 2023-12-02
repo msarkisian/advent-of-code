@@ -1,5 +1,6 @@
 import re
 import unittest
+import math
 
 
 def is_possible(reds: int, greens: int, blues: int) -> bool:
@@ -34,14 +35,36 @@ def part_1(input: str) -> int:
     return total
 
 
+def part_2(input: str) -> int:
+    total = 0
+    for line in input.splitlines():
+        rounds = re.split(r'[:;]', line)[1::]
+        max_color_counts = {"red": 0, "green": 0, "blue": 0}
+        for round in rounds:
+            tokens = round.strip().split(" ")
+            curr_token = 0
+            while curr_token < len(tokens):
+                color = tokens[curr_token + 1].strip(',')
+                max_color_counts[color] = max(
+                    max_color_counts[color], int(tokens[curr_token]))
+                curr_token += 2
+        total += math.prod(max_color_counts.values())
+    return total
+
+
 class Test(unittest.TestCase):
     def test_part_1(self):
         with open("./input/2_test.txt") as file:
+
             self.assertEqual(part_1(file.read()), 8)
+
+    def test_part_2(self):
+        with open("./input/2_test.txt") as file:
+            self.assertEqual(part_2(file.read()), 2286)
 
 
 if __name__ == "__main__":
     with open("./input/2.txt") as file:
         input = file.read()
         print(f"Part 1: {part_1(input)}")
-        # print(f"Part 2: {part_2(input)}")
+        print(f"Part 2: {part_2(input)}")
