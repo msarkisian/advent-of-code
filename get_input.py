@@ -1,5 +1,6 @@
 import requests
 import datetime
+import os
 
 
 def fetch_input(year: str, day: str) -> str:
@@ -12,6 +13,8 @@ def fetch_input(year: str, day: str) -> str:
 
 def save_input(year: str, day: str):
     input = fetch_input(year, day)
+    if not os.path.exists(f"./input/{year}"):
+        os.mkdir(f"./input/{year}")
     path = f"./input/{year}/{day}.txt"
     with open(path, 'w') as file:
         file.write(input)
