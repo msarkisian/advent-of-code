@@ -100,7 +100,7 @@ def part2(directions: list[str]):
 
 
 if __name__ == "__main__":
-    with open("./input/1.txt") as file:
+    with open("../input/2016/1.txt") as file:
         directions = file.read().split(", ")
         print(part1(directions))
         print(part2(directions))

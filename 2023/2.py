@@ -54,17 +54,17 @@ def part_2(input: str) -> int:
 
 class Test(unittest.TestCase):
     def test_part_1(self):
-        with open("./input/2_test.txt") as file:
+        with open("../input/2023/2_test.txt") as file:
 
             self.assertEqual(part_1(file.read()), 8)
 
     def test_part_2(self):
-        with open("./input/2_test.txt") as file:
+        with open("../input/2023/2_test.txt") as file:
             self.assertEqual(part_2(file.read()), 2286)
 
 
 if __name__ == "__main__":
-    with open("./input/2.txt") as file:
+    with open("../input/2023/2.txt") as file:
         input = file.read()
         print(f"Part 1: {part_1(input)}")
         print(f"Part 2: {part_2(input)}")
