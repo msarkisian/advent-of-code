@@ -9,6 +9,8 @@ def fetch_input(year: str, day: str) -> str:
         cookie_id = f.read()
     url = f"https://adventofcode.com/{year}/day/{day}/input"
     r = requests.get(url, cookies={"session": cookie_id})
+    if r.status_code != '200':
+        raise Exception(f"bad response from server: {r.text}")
     return r.text
 
 
@@ -43,7 +45,6 @@ def main():
                         default=datetime.date.today().day)
     parser.add_argument("-a", "--all", action="store_true")
     args = parser.parse_args()
-    print(args)
     if args.all:
         fetch_all()
     else:
