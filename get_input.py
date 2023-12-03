@@ -1,6 +1,7 @@
 import requests
 import datetime
 import os
+import argparse
 
 
 def fetch_input(year: str, day: str) -> str:
@@ -20,7 +21,7 @@ def save_input(year: str, day: str):
         file.write(input)
 
 
-if __name__ == "__main__":
+def fetch_all():
     FIRST_YEAR = 2015
     current_year = datetime.date.today().year
 
@@ -32,3 +33,22 @@ if __name__ == "__main__":
         for day in range(1, last_day + 1):
             if not os.path.exists(f"./input/{year}/day{day}.txt"):
                 save_input(year, day)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("year", type=int, nargs="?",
+                        default=datetime.date.today().year)
+    parser.add_argument("day", type=int, nargs="?",
+                        default=datetime.date.today().day)
+    parser.add_argument("-a", "--all", action="store_true")
+    args = parser.parse_args()
+    print(args)
+    if args.all:
+        fetch_all()
+    else:
+        save_input(args.year, args.day)
+
+
+if __name__ == "__main__":
+    main()
