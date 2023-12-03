@@ -21,5 +21,14 @@ def save_input(year: str, day: str):
 
 
 if __name__ == "__main__":
-    now = datetime.date.today()
-    save_input(now.year, now.day)
+    FIRST_YEAR = 2015
+    current_year = datetime.date.today().year
+
+    for year in range(FIRST_YEAR, current_year + 1):
+        if year != current_year:
+            last_day = 25
+        else:
+            last_day = datetime.date.today().day
+        for day in range(1, last_day + 1):
+            if not os.path.exists(f"./input/{year}/day{day}.txt"):
+                save_input(year, day)
