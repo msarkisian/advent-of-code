@@ -15,7 +15,7 @@ def save_input(year: str, day: str):
     input = fetch_input(year, day)
     if not os.path.exists(f"./input/{year}"):
         os.mkdir(f"./input/{year}")
-    path = f"./input/{year}/{day}.txt"
+    path = f"./input/{year}/day{day}.txt"
     with open(path, 'w') as file:
         file.write(input)
 

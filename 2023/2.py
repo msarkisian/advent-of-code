@@ -64,7 +64,7 @@ class Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    with open("../input/2023/2.txt") as file:
+    with open("../input/2023/day2.txt") as file:
         input = file.read()
         print(f"Part 1: {part_1(input)}")
         print(f"Part 2: {part_2(input)}")
