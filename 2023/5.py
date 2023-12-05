@@ -31,29 +31,39 @@ class RangeMap():
 def map_ranges(ranges: list[Range], range_maps: list[RangeMap]) -> list[Range]:
     queue = ranges
     output = []
-    for r in queue:
+    # for r in queue:
+    while len(queue) > 0:
+        r = queue.pop()
+        found = False
         for rm in range_maps:
             if r.start >= rm.start and r.end <= rm.end:
                 # rm perfectly contains range
                 output.append(Range(r.start + rm.offset, r.end + rm.offset))
+                found = True
                 break
-            elif r.start >= rm.start and r.end > rm.end:
+            elif r.start >= rm.start and r.start <= rm.end and r.end > rm.end:
                 # range overflows rm end
                 output.append(Range(r.start + rm.offset, rm.end + rm.offset))
                 queue.append(Range(rm.end + 1, r.end))
+                found = True
                 break
-            elif r.start < rm.start and r.end <= rm.end:
+            elif r.start < rm.start and r.end >= rm.start and r.end <= rm.end:
                 # range overflows rm start
+
                 output.append(Range(rm.start + rm.offset, r.end + rm.offset))
-                queue.append(Range(r.start, r.end - 1))
+                queue.append(Range(r.start, rm.start - 1))
+                found = True
                 break
             elif r.start < rm.start and r.end > rm.end:
                 # range overflows on both ends
                 output.append(Range(rm.start + rm.offset, rm.end + rm.offset))
                 queue.append(r.start, rm.start - 1)
                 queue.append(rm.end + 1, r.end)
+                found = True
+                break
         # no matches found on any map
-        output.append(r)
+        if not found:
+            output.append(r)
     return output
 
 
@@ -106,6 +116,20 @@ def part_2(input: str) -> int:
         length = int(seeds[seed_idx + 1])
         ranges.append(Range(start, start + length - 1))
         seed_idx += 2
+
+    map_idx = 1
+    range_maps = []
+    while map_idx < len(maps):
+        if maps[map_idx] == '':
+            # process
+            ranges = map_ranges(ranges, range_maps)
+
+            map_idx += 2
+            continue
+        vals = maps[map_idx].split(' ')
+        range_maps.append(RangeMap(int(vals[1]), int(
+            vals[2]), int(vals[0]) - int(vals[1])))
+        map_idx += 1
     print(ranges)
 
 
@@ -126,6 +150,16 @@ class Test(unittest.TestCase):
     def test_part_2(self):
         with open("../input/2023/5_test.txt") as f:
             self.assertEqual(part_2(f.read()), 46)
+
+    def test_map_ranges(self):
+        # perfect
+        ranges = [
+            Range(79, 92),
+        ]
+        range_maps = [
+            RangeMap(79, 14, -1)
+        ]
+        self.assertEqual(map_ranges(ranges, range_maps), [Range(78, 91)])
 
 
 if __name__ == "__main__":
