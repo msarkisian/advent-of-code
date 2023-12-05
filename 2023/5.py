@@ -57,8 +57,8 @@ def map_ranges(ranges: list[Range], range_maps: list[RangeMap]) -> list[Range]:
             elif r.start < rm.start and r.end > rm.end:
                 # range overflows on both ends
                 output.append(Range(rm.start + rm.offset, rm.end + rm.offset))
-                queue.append(r.start, rm.start - 1)
-                queue.append(rm.end + 1, r.end)
+                queue.append(Range(r.start, rm.start - 1))
+                queue.append(Range(rm.end + 1, r.end))
                 found = True
                 break
         # no matches found on any map
@@ -123,6 +123,7 @@ def part_2(input: str) -> int:
         if maps[map_idx] == '':
             # process
             ranges = map_ranges(ranges, range_maps)
+            range_maps = []
 
             map_idx += 2
             continue
@@ -130,7 +131,7 @@ def part_2(input: str) -> int:
         range_maps.append(RangeMap(int(vals[1]), int(
             vals[2]), int(vals[0]) - int(vals[1])))
         map_idx += 1
-    print(ranges)
+    return min(ranges, key=lambda r: r.start).start
 
 
 class Test(unittest.TestCase):
@@ -166,4 +167,4 @@ if __name__ == "__main__":
     with open("../input/2023/day5.txt") as f:
         input = f.read()
         print(f"Part 1: {part_1(input)}")
-        # print(f"Part 2: {part_2(input)}")
+        print(f"Part 2: {part_2(input)}")
